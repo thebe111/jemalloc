@@ -20,6 +20,8 @@ bin_update_shard_size(unsigned bin_shard_sizes[SC_NBINS], size_t start_size,
 		end_size = SC_SMALL_MAXCLASS;
 	}
 
+    // @@@: hashtable ???
+
 	/* Compute the index since this may happen before sz init. */
 	szind_t ind1 = sz_size2index_compute(start_size);
 	szind_t ind2 = sz_size2index_compute(end_size);
@@ -40,8 +42,7 @@ bin_shard_sizes_boot(unsigned bin_shard_sizes[SC_NBINS]) {
 
 bool
 bin_init(bin_t *bin) {
-	if (malloc_mutex_init(&bin->lock, "bin", WITNESS_RANK_BIN,
-	    malloc_mutex_rank_exclusive)) {
+	if (malloc_mutex_init(&bin->lock, "bin", WITNESS_RANK_BIN, malloc_mutex_rank_exclusive)) {
 		return true;
 	}
 	bin->slabcur = NULL;

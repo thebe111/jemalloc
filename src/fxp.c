@@ -83,8 +83,7 @@ fxp_parse(fxp_t *result, const char *str, char **end) {
 	}
 
 	assert(fractional_part < frac_div);
-	uint32_t fractional_repr = (uint32_t)(
-	    (fractional_part << 16) / frac_div);
+	uint32_t fractional_repr = (uint32_t)((fractional_part << 16) / frac_div);
 
 	/* Success! */
 	*result = (integer_part << 16) + fractional_repr;

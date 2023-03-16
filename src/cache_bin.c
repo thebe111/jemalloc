@@ -45,21 +45,18 @@ cache_bin_preincrement(cache_bin_info_t *infos, szind_t ninfos, void *alloc,
 		size_t computed_alignment;
 
 		/* Pointer should be as aligned as we asked for. */
-		cache_bin_info_compute_alloc(infos, ninfos, &computed_size,
-		    &computed_alignment);
+		cache_bin_info_compute_alloc(infos, ninfos, &computed_size, &computed_alignment);
 		assert(((uintptr_t)alloc & (computed_alignment - 1)) == 0);
 	}
 
-	*(uintptr_t *)((uintptr_t)alloc + *cur_offset) =
-	    cache_bin_preceding_junk;
+	*(uintptr_t *)((uintptr_t)alloc + *cur_offset) = cache_bin_preceding_junk;
 	*cur_offset += sizeof(void *);
 }
 
 void
 cache_bin_postincrement(cache_bin_info_t *infos, szind_t ninfos, void *alloc,
     size_t *cur_offset) {
-	*(uintptr_t *)((uintptr_t)alloc + *cur_offset) =
-	    cache_bin_trailing_junk;
+	*(uintptr_t *)((uintptr_t)alloc + *cur_offset) = cache_bin_trailing_junk;
 	*cur_offset += sizeof(void *);
 }
 
@@ -83,9 +80,12 @@ cache_bin_init(cache_bin_t *bin, cache_bin_info_t *info, void *alloc,
 	bin->low_bits_low_water = (uint16_t)(uintptr_t)bin->stack_head;
 	bin->low_bits_full = (uint16_t)(uintptr_t)full_position;
 	bin->low_bits_empty = (uint16_t)(uintptr_t)empty_position;
-	cache_bin_sz_t free_spots = cache_bin_diff(bin,
-	    bin->low_bits_full, (uint16_t)(uintptr_t)bin->stack_head,
-	    /* racy */ false);
+	cache_bin_sz_t free_spots = cache_bin_diff(
+            bin,
+            bin->low_bits_full,
+            (uint16_t)(uintptr_t)bin->stack_head,
+            /* racy */ false
+            );
 	assert(free_spots == bin_stack_size);
 	assert(cache_bin_ncached_get_local(bin, info) == 0);
 	assert(cache_bin_empty_position_get(bin) == empty_position);

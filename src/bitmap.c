@@ -22,15 +22,18 @@ bitmap_info_init(bitmap_info_t *binfo, size_t nbits) {
 	 */
 	binfo->levels[0].group_offset = 0;
 	group_count = BITMAP_BITS2GROUPS(nbits);
+
 	for (i = 1; group_count > 1; i++) {
 		assert(i < BITMAP_MAX_LEVELS);
-		binfo->levels[i].group_offset = binfo->levels[i-1].group_offset
-		    + group_count;
+
+		binfo->levels[i].group_offset = binfo->levels[i-1].group_offset + group_count;
 		group_count = BITMAP_BITS2GROUPS(group_count);
 	}
-	binfo->levels[i].group_offset = binfo->levels[i-1].group_offset
-	    + group_count;
+
+	binfo->levels[i].group_offset = binfo->levels[i-1].group_offset + group_count;
+
 	assert(binfo->levels[i].group_offset <= BITMAP_GROUPS_MAX);
+
 	binfo->nlevels = i;
 	binfo->nbits = nbits;
 }
@@ -63,16 +66,16 @@ bitmap_init(bitmap_t *bitmap, const bitmap_info_t *binfo, bool fill) {
 	 * significant bits of the last group.
 	 */
 	memset(bitmap, 0xffU, bitmap_size(binfo));
-	extra = (BITMAP_GROUP_NBITS - (binfo->nbits & BITMAP_GROUP_NBITS_MASK))
-	    & BITMAP_GROUP_NBITS_MASK;
+	extra = (BITMAP_GROUP_NBITS - (binfo->nbits & BITMAP_GROUP_NBITS_MASK)) & BITMAP_GROUP_NBITS_MASK;
+
 	if (extra != 0) {
 		bitmap[binfo->levels[1].group_offset - 1] >>= extra;
 	}
+
 	for (i = 1; i < binfo->nlevels; i++) {
-		size_t group_count = binfo->levels[i].group_offset -
-		    binfo->levels[i-1].group_offset;
-		extra = (BITMAP_GROUP_NBITS - (group_count &
-		    BITMAP_GROUP_NBITS_MASK)) & BITMAP_GROUP_NBITS_MASK;
+		size_t group_count = binfo->levels[i].group_offset - binfo->levels[i-1].group_offset;
+		extra = (BITMAP_GROUP_NBITS - (group_count & BITMAP_GROUP_NBITS_MASK)) & BITMAP_GROUP_NBITS_MASK;
+
 		if (extra != 0) {
 			bitmap[binfo->levels[i+1].group_offset - 1] >>= extra;
 		}
@@ -105,8 +108,8 @@ bitmap_init(bitmap_t *bitmap, const bitmap_info_t *binfo, bool fill) {
 	}
 
 	memset(bitmap, 0xffU, bitmap_size(binfo));
-	extra = (BITMAP_GROUP_NBITS - (binfo->nbits & BITMAP_GROUP_NBITS_MASK))
-	    & BITMAP_GROUP_NBITS_MASK;
+	extra = (BITMAP_GROUP_NBITS - (binfo->nbits & BITMAP_GROUP_NBITS_MASK)) & BITMAP_GROUP_NBITS_MASK;
+
 	if (extra != 0) {
 		bitmap[binfo->ngroups - 1] >>= extra;
 	}

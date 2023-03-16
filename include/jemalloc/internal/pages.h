@@ -18,7 +18,7 @@
 	((s) & ~PAGE_MASK)
 
 /* Huge page size.  LG_HUGEPAGE is determined by the configure script. */
-#define HUGEPAGE	((size_t)(1U << LG_HUGEPAGE))
+#define HUGEPAGE	((size_t)(1U << LG_HUGEPAGE)) // LG_HUGEPAGE == 10
 #define HUGEPAGE_MASK	((size_t)(HUGEPAGE - 1))
 
 #if LG_HUGEPAGE != 0

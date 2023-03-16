@@ -1,3 +1,96 @@
+https://app.gitter.im/#/room/#jemalloc_jemalloc:gitter.im
+
+== abbreviations == 
+
+tsd = thread specific data
+sc = size class (computation)
+pai = page allocation interface
+prof = profiling things
+bin = ???
+san = sanitizer
+reg = region
+edata = extended data (span of pages)
+hpa = huge-page allocator
+pac = page allocator classic
+dss = desired space size ???
+
+== identified patterns == 
+
+all functions that start with tsdn_t* has concurrency related
+
+-------
+
+MT => multi-thread
+
+6	edata.c...................OK (extended data - INCOMPLETE)
+8	exp_grow.c................OK (increase a data)
+15	ticker.py.................OK (frequency of anything, maybe page sizes values ???)
+30	bin_info.c................OK (define registers and slab (slot) data) 
+30	counter.c.................OK (related with MT behavior) ???
+31	pai.c.....................OK (page allocation interface)
+
+    edata_list_active_first() // walk in a linked list ???  
+
+32	ticker.c..................OK (frequency values of anything that is computed on src/ticker.py)
+35	ecache.c..................OK (related with MT behavior) ???
+36	safety_check.c............OK (fn's to perform checking on deallocation)
+41	extent_mmap.c.............OK (fn's that extends mmap behavior, returns an allocated page)
+55	div.c.....................OK (div operation calc to a magic number, maybe for debug purpose ???)
+57	prof_stats.c..............OK (MT | profiling stats)
+63	hpa_hooks.c...............OK (hooks/callbacks for anything)
+69	bin.c.....................OK (MT | start SC (size class) slots)
+77	inspect.c.................OK (MT | debug purposes (profiling))
+78	log.c.....................OK (check the segment size and compare with the log)
+82	peak_event.c..............OK (MT | actions that is performed in an event loop like every time that happens alloc/dealloc)
+99	cache_bin.c...............OK (compute empty slots ???)
+104	san_bump.c................OK (alloc region space ???)
+114	sz.c......................OK (fn's to convert size <=> index on allocated pages)
+120	bitmap.c..................OK (allocation by bits)
+122	witness.c.................OK (prints, debug purpose ???)
+124	fxp.c.....................OK (float point arithmetics str => float "parser")
+144	buf_writer.c..............OK (write on a buffer that can be internal (generated inside the thread???) or external)
+154	edata_cache.c.............OK (MT | extended data cache)
+191	pa_extra.c................OK (MT | mutexes and stats fn's PA (???) module)
+195	hook.c....................OK (fn's to handle hooks (callbacks) - events ???)
+208	san.c.....................OK (sanitizer - guards addresses of pages ??? | and clean things)
+228	mutex.c...................OK (mutex fn's)
+261	rtree.c...................OK (short tree; membership closed to another internal <=> leaf)
+275	ehooks.c..................OK (hooks about alloc/dalloc memory)
+277	extent_dss.c..............OK (???)
+277	pa.c......................OK (page allocation ???)
+282	eset.c
+289	nstime.c
+295	decay.c
+306	sc.c
+322	large.c
+325	hpdata.c
+343	thread_event.c
+385	psset.c
+386	emap.c
+422	sec.c
+469	zone.c
+529	base.c
+549	tsd.c
+569	ckh.c
+587	pac.c
+600	prof_recent.c
+669	prof_sys.c
+697	malloc_io.c
+717	prof_log.c
+789	prof.c
+820	background_thread.c
+824	pages.c
+1044	hpa.c
+1101	tcache.c
+1326	extent.c
+1447	prof_data.c
+1891	arena.c
+1973	stats.c
+4414	ctl.c
+4476	jemalloc.c
+
+== ORIGINAL README AREA ==
+
 jemalloc is a general purpose malloc(3) implementation that emphasizes
 fragmentation avoidance and scalable concurrency support.  jemalloc first came
 into use as the FreeBSD libc allocator in 2005, and since then it has found its

@@ -13,8 +13,7 @@ buf_writer_allocate_internal_buf(tsdn_t *tsdn, size_t buf_len) {
 #else
 	assert(buf_len <= SC_LARGE_MAXCLASS);
 #endif
-	return iallocztm(tsdn, buf_len, sz_size2index(buf_len), false, NULL,
-	    true, arena_get(tsdn, 0, false), true);
+	return iallocztm(tsdn, buf_len, sz_size2index(buf_len), false, NULL, true, arena_get(tsdn, 0, false), true);
 }
 
 static void
@@ -38,16 +37,18 @@ buf_writer_assert(buf_writer_t *buf_writer) {
 }
 
 bool
-buf_writer_init(tsdn_t *tsdn, buf_writer_t *buf_writer, write_cb_t *write_cb,
-    void *cbopaque, char *buf, size_t buf_len) {
+buf_writer_init(tsdn_t *tsdn, buf_writer_t *buf_writer, write_cb_t *write_cb, void *cbopaque, char *buf, size_t buf_len) {
 	if (write_cb != NULL) {
 		buf_writer->write_cb = write_cb;
 	} else {
 		buf_writer->write_cb = je_malloc_message != NULL ?
 		    je_malloc_message : wrtmessage;
 	}
+
 	buf_writer->cbopaque = cbopaque;
+
 	assert(buf_len >= 2);
+
 	if (buf != NULL) {
 		buf_writer->buf = buf;
 		buf_writer->internal_buf = false;
@@ -56,25 +57,31 @@ buf_writer_init(tsdn_t *tsdn, buf_writer_t *buf_writer, write_cb_t *write_cb,
 		    buf_len);
 		buf_writer->internal_buf = true;
 	}
+
 	if (buf_writer->buf != NULL) {
 		buf_writer->buf_size = buf_len - 1; /* Allowing for '\0'. */
 	} else {
 		buf_writer->buf_size = 0;
 	}
+
 	buf_writer->buf_end = 0;
 	buf_writer_assert(buf_writer);
+
 	return buf_writer->buf == NULL;
 }
 
 void
 buf_writer_flush(buf_writer_t *buf_writer) {
 	buf_writer_assert(buf_writer);
+
 	if (buf_writer->buf == NULL) {
 		return;
 	}
+
 	buf_writer->buf[buf_writer->buf_end] = '\0';
 	buf_writer->write_cb(buf_writer->cbopaque, buf_writer->buf);
 	buf_writer->buf_end = 0;
+
 	buf_writer_assert(buf_writer);
 }
 
@@ -105,6 +112,7 @@ void
 buf_writer_terminate(tsdn_t *tsdn, buf_writer_t *buf_writer) {
 	buf_writer_assert(buf_writer);
 	buf_writer_flush(buf_writer);
+
 	if (buf_writer->internal_buf) {
 		buf_writer_free_internal_buf(tsdn, buf_writer->buf);
 	}
